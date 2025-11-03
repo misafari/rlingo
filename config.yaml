@@ -1,0 +1,11 @@
+database:
+  host: localhost
+  port: 5433
+  user: tms
+  password: tms
+  dbname: tms
+  sslmode: disable
+
+server:
+  port: 8080
+

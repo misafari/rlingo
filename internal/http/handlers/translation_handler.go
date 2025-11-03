@@ -16,7 +16,6 @@ func NewTranslationHandler(service *translation.Service) *TranslationHandler {
     return &TranslationHandler{service: service}
 }
 
-// Create new translation
 func (h *TranslationHandler) Create(c echo.Context) error {
     var req struct {
         TenantID  string `json:"tenant_id"`
@@ -38,7 +37,6 @@ func (h *TranslationHandler) Create(c echo.Context) error {
     return c.JSON(http.StatusCreated, t)
 }
 
-// List all translations by project
 func (h *TranslationHandler) ListByProject(c echo.Context) error {
     tenantID := c.Param("tenant_id")
     projectID := c.Param("project_id")
@@ -50,7 +48,6 @@ func (h *TranslationHandler) ListByProject(c echo.Context) error {
     return c.JSON(http.StatusOK, list)
 }
 
-// Get single translation by ID
 func (h *TranslationHandler) Get(c echo.Context) error {
     tenantID := c.Param("tenant_id")
     id := c.Param("id")
@@ -62,7 +59,6 @@ func (h *TranslationHandler) Get(c echo.Context) error {
     return c.JSON(http.StatusOK, t)
 }
 
-// Update translation text
 func (h *TranslationHandler) Update(c echo.Context) error {
     tenantIDStr := c.Param("tenant_id")
     id := c.Param("id")
@@ -81,7 +77,6 @@ func (h *TranslationHandler) Update(c echo.Context) error {
     return c.JSON(http.StatusOK, map[string]string{"message": "updated"})
 }
 
-// Approve translation
 func (h *TranslationHandler) Approve(c echo.Context) error {
     tenantIDStr := c.Param("tenant_id")
     id := c.Param("id")
@@ -93,7 +88,6 @@ func (h *TranslationHandler) Approve(c echo.Context) error {
     return c.JSON(http.StatusOK, map[string]string{"message": "approved"})
 }
 
-// Delete translation
 func (h *TranslationHandler) Delete(c echo.Context) error {
     tenantID := c.Param("tenant_id")
     id := c.Param("id")
