@@ -5,9 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"tms/internal/domain/translation"
-
-	"github.com/google/uuid"
+	"github.com/misafari/rlingo/internal/domain/translation"
 )
 
 type TranslationRepo struct {

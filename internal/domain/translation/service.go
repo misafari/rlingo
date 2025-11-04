@@ -8,11 +8,11 @@ import (
 )
 
 type Service struct {
-	repo Repository
+	Repo Repository
 }
 
-func NewService(repo Repository) *Service {
-	return &Service{repo: repo}
+func NewService(Repo Repository) *Service {
+	return &Service{Repo: Repo}
 }
 
 func (s *Service) Create(ctx context.Context, tenantID, projectID uuid.UUID, key, locale, text string) (*Translation, error) {
@@ -26,11 +26,11 @@ func (s *Service) Create(ctx context.Context, tenantID, projectID uuid.UUID, key
 		Status:    StatusDraft,
 		UpdatedAt: time.Now(),
 	}
-	return t, s.repo.Create(ctx, t)
+	return t, s.Repo.Create(ctx, t)
 }
 
 func (s *Service) UpdateText(ctx context.Context, tenantID uuid.UUID, id string, newText string) error {
-	t, err := s.repo.GetByID(ctx, tenantID.String(), id)
+	t, err := s.Repo.GetByID(ctx, tenantID.String(), id)
 	if err != nil {
 		return err
 	}
@@ -40,11 +40,11 @@ func (s *Service) UpdateText(ctx context.Context, tenantID uuid.UUID, id string,
 	t.Text = newText
 	t.Status = StatusReviewed
 	t.UpdatedAt = time.Now()
-	return s.repo.Update(ctx, t)
+	return s.Repo.Update(ctx, t)
 }
 
 func (s *Service) Approve(ctx context.Context, tenantID uuid.UUID, id string) error {
-	t, err := s.repo.GetByID(ctx, tenantID.String(), id)
+	t, err := s.Repo.GetByID(ctx, tenantID.String(), id)
 	if err != nil {
 		return err
 	}
@@ -53,5 +53,5 @@ func (s *Service) Approve(ctx context.Context, tenantID uuid.UUID, id string) er
 	}
 	t.Status = StatusApproved
 	t.UpdatedAt = time.Now()
-	return s.repo.Update(ctx, t)
+	return s.Repo.Update(ctx, t)
 }

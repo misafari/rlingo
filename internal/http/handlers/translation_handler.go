@@ -5,7 +5,7 @@ import (
 
     "github.com/google/uuid"
     "github.com/labstack/echo/v4"
-    "tms/internal/domain/translation"
+    "github.com/misafari/rlingo/internal/domain/translation"
 )
 
 type TranslationHandler struct {
@@ -41,7 +41,7 @@ func (h *TranslationHandler) ListByProject(c echo.Context) error {
     tenantID := c.Param("tenant_id")
     projectID := c.Param("project_id")
 
-    list, err := h.service.Repo().ListByProject(c.Request().Context(), tenantID, projectID)
+    list, err := h.service.Repo.ListByProject(c.Request().Context(), tenantID, projectID)
     if err != nil {
         return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
     }
@@ -52,7 +52,7 @@ func (h *TranslationHandler) Get(c echo.Context) error {
     tenantID := c.Param("tenant_id")
     id := c.Param("id")
 
-    t, err := h.service.Repo().GetByID(c.Request().Context(), tenantID, id)
+    t, err := h.service.Repo.GetByID(c.Request().Context(), tenantID, id)
     if err != nil {
         return echo.NewHTTPError(http.StatusNotFound, err.Error())
     }
@@ -92,7 +92,7 @@ func (h *TranslationHandler) Delete(c echo.Context) error {
     tenantID := c.Param("tenant_id")
     id := c.Param("id")
 
-    if err := h.service.Repo().Delete(c.Request().Context(), tenantID, id); err != nil {
+    if err := h.service.Repo.Delete(c.Request().Context(), tenantID, id); err != nil {
         return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
     }
     return c.NoContent(http.StatusNoContent)
