@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS translation;
+DROP EXTENSION IF EXISTS "uuid-ossp";
