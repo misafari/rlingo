@@ -36,7 +36,8 @@ func main() {
 
 	translationRepository := postgres.NewTranslationRepository(postgresqlDatabaseConnectionPool)
 
-	translationModifyingUseCase := translation.NewModifyingUseCase(translationRepository)
+	translationModifyingUseCase := translation.NewCudTranslationUseCase(translationRepository)
+	translationReadUseCase := translation.NewReadTranslationUseCase(translationRepository)
 
 	app := fiber.New(fiber.Config{
 		AppName: "Rlingo API v1.0",
@@ -46,9 +47,12 @@ func main() {
 
 	api := app.Group("/api/v1")
 
-	translationHttpHandler := handler.NewTranslationHandler(translationModifyingUseCase)
+	translationHttpHandler := handler.NewTranslationHandler(translationModifyingUseCase, translationReadUseCase)
 	translationApiGroup := api.Group("/translations")
-	translationApiGroup.Post("/", translationHttpHandler.CreateTranslation)
+	translationApiGroup.Post("/", translationHttpHandler.Create)
+	translationApiGroup.Get("/", translationHttpHandler.FetchAll)
+	translationApiGroup.Delete("/:id", translationHttpHandler.DeleteOneById)
+	translationApiGroup.Put("/:id", translationHttpHandler.Update)
 
 	if err := app.Listen(":8000"); err != nil {
 		log.Fatal(err)

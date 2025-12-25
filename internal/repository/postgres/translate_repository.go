@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	domain "github.com/misafari/rlingo/internal/domain/translation"
 )
@@ -12,13 +13,85 @@ type TranslationRepository struct {
 	pool *pgxpool.Pool
 }
 
-func NewTranslationRepository(pool *pgxpool.Pool) domain.TranslationRepository {
-	return &TranslationRepository{
-		pool: pool,
+func (t *TranslationRepository) DeleteOneById(ctx context.Context, id string) error {
+	tx, err := t.pool.Begin(ctx)
+	if err != nil {
+		return err
 	}
+	defer tx.Rollback(ctx)
+
+	query := `DELETE FROM translation WHERE id = $1`
+	tag, err := tx.Exec(ctx, query, id)
+	if err != nil {
+		return err
+	}
+
+	rows := tag.RowsAffected()
+
+	if rows == 0 {
+		return pgx.ErrNoRows
+	}
+
+	if rows > 1 {
+		return pgx.ErrTooManyRows
+	}
+
+	return tx.Commit(ctx)
 }
 
-func (t *TranslationRepository) CreateNewTranslation(ctx context.Context, translation *domain.Translation) error {
+func (t *TranslationRepository) Update(ctx context.Context, translation *domain.Translation) error {
+	tx, err := t.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	query := `UPDATE translation SET key = $1, locale = $2, text = $3 WHERE id = $4`
+
+	tag, err := tx.Exec(ctx, query, translation.Key, translation.Locale, translation.Text, translation.ID)
+
+	if err != nil {
+		return fmt.Errorf("error updating translation: %w", err)
+	}
+
+	if tag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+
+	if tag.RowsAffected() > 1 {
+		return pgx.ErrTooManyRows
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return fmt.Errorf("error committing transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (t *TranslationRepository) FetchAll(ctx context.Context) ([]*domain.Translation, error) {
+	query := `SELECT id, key, locale, text FROM translation`
+	rows, err := t.pool.Query(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching translations: %w", err)
+	}
+	defer rows.Close()
+
+	var translations []*domain.Translation
+
+	for rows.Next() {
+		var translation domain.Translation
+		if err = rows.Scan(&translation.ID, &translation.Key, &translation.Locale, &translation.Text); err != nil {
+			return nil, fmt.Errorf("error scanning translation: %w", err)
+		}
+
+		translations = append(translations, &translation)
+	}
+
+	return translations, nil
+}
+
+func (t *TranslationRepository) Create(ctx context.Context, translation *domain.Translation) error {
 	tx, err := t.pool.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("error starting transaction: %w", err)
@@ -42,4 +115,10 @@ func (t *TranslationRepository) CreateNewTranslation(ctx context.Context, transl
 	}
 
 	return nil
+}
+
+func NewTranslationRepository(pool *pgxpool.Pool) domain.TranslationRepository {
+	return &TranslationRepository{
+		pool: pool,
+	}
 }

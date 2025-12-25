@@ -1,7 +1,12 @@
 package translation
 
-import "context"
+import (
+	"context"
+)
 
 type TranslationRepository interface {
-	CreateNewTranslation(ctx context.Context, translation *Translation) error
+	Create(ctx context.Context, translation *Translation) error
+	FetchAll(context.Context) ([]*Translation, error)
+	DeleteOneById(context.Context, string) error
+	Update(context.Context, *Translation) error
 }
