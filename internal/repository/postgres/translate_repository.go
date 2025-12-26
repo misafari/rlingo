@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -18,7 +19,11 @@ func (t *TranslationRepository) DeleteOneById(ctx context.Context, id string) er
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback(ctx)
+	defer func(tx pgx.Tx, ctx context.Context) {
+		if err := tx.Rollback(ctx); err != nil {
+			log.Printf("error rolling back transaction: %v", err)
+		}
+	}(tx, ctx)
 
 	query := `DELETE FROM translation WHERE id = $1`
 	tag, err := tx.Exec(ctx, query, id)
@@ -44,7 +49,11 @@ func (t *TranslationRepository) Update(ctx context.Context, translation *domain.
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback(ctx)
+	defer func(tx pgx.Tx, ctx context.Context) {
+		if err := tx.Rollback(ctx); err != nil {
+			log.Printf("error rolling back transaction: %v", err)
+		}
+	}(tx, ctx)
 
 	query := `UPDATE translation SET key = $1, locale = $2, text = $3 WHERE id = $4`
 
@@ -117,7 +126,7 @@ func (t *TranslationRepository) Create(ctx context.Context, translation *domain.
 	return nil
 }
 
-func NewTranslationRepository(pool *pgxpool.Pool) domain.TranslationRepository {
+func NewTranslationRepository(pool *pgxpool.Pool) domain.Repository {
 	return &TranslationRepository{
 		pool: pool,
 	}

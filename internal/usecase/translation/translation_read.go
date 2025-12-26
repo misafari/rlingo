@@ -8,10 +8,10 @@ import (
 )
 
 type ReadTranslationUseCase struct {
-	repo translation.TranslationRepository
+	repo translation.Repository
 }
 
-func NewReadTranslationUseCase(repo translation.TranslationRepository) *ReadTranslationUseCase {
+func NewReadTranslationUseCase(repo translation.Repository) *ReadTranslationUseCase {
 	return &ReadTranslationUseCase{
 		repo: repo,
 	}

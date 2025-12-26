@@ -11,10 +11,10 @@ import (
 )
 
 type CudTranslationUseCase struct {
-	repo translation.TranslationRepository
+	repo translation.Repository
 }
 
-func NewCudTranslationUseCase(repo translation.TranslationRepository) *CudTranslationUseCase {
+func NewCudTranslationUseCase(repo translation.Repository) *CudTranslationUseCase {
 	return &CudTranslationUseCase{
 		repo: repo,
 	}
