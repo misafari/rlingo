@@ -3,6 +3,8 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/.idea/queries/Query.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000001_translation_table_creation.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000002_project_table_creation.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000002_project_table_creation.up.sql" dialect="PostgreSQL" />
     <file url="PROJECT" dialect="PostgreSQL" />
   </component>
 </project>

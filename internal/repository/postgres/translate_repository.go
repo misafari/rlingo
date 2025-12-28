@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	domain "github.com/misafari/rlingo/internal/domain/translation"
@@ -14,19 +15,20 @@ type TranslationRepository struct {
 	pool *pgxpool.Pool
 }
 
-func (t *TranslationRepository) DeleteOneById(ctx context.Context, id string) error {
+func (t *TranslationRepository) DeleteOneById(ctx context.Context, id uuid.UUID) error {
 	tx, err := t.pool.Begin(ctx)
 	if err != nil {
 		return err
 	}
+
 	defer func(tx pgx.Tx, ctx context.Context) {
-		if err := tx.Rollback(ctx); err != nil {
+		if err = tx.Rollback(ctx); err != nil {
 			log.Printf("error rolling back transaction: %v", err)
 		}
 	}(tx, ctx)
 
 	query := `DELETE FROM translation WHERE id = $1`
-	tag, err := tx.Exec(ctx, query, id)
+	tag, err := tx.Exec(ctx, query, id.String())
 	if err != nil {
 		return err
 	}
@@ -112,7 +114,7 @@ func (t *TranslationRepository) Create(ctx context.Context, translation *domain.
 	}()
 
 	query := `INSERT INTO translation (id, key, locale, text) VALUES ($1, $2, $3, $4) RETURNING id`
-	err = tx.QueryRow(ctx, query, translation.ID, translation.Key, translation.Locale, translation.Text).
+	err = tx.QueryRow(ctx, query, uuid.New(), translation.Key, translation.Locale, translation.Text).
 		Scan(&translation.ID)
 
 	if err != nil {

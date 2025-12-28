@@ -36,8 +36,8 @@ func (u *CudTranslationUseCase) Create(ctx context.Context, tr *translation.Tran
 	return nil
 }
 
-func (u *CudTranslationUseCase) DeleteOneById(ctx *fasthttp.RequestCtx, id string) error {
-	if id == "" {
+func (u *CudTranslationUseCase) DeleteOneById(ctx *fasthttp.RequestCtx, id uuid.UUID) error {
+	if id == uuid.Nil {
 		return errors.New("translation id cannot be empty")
 	}
 

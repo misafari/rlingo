@@ -56,7 +56,6 @@ func (h *TranslationHandler) Create(c *fiber.Ctx) error {
 	}
 
 	tr := &translation.Translation{
-		ID:     uuid.New(),
 		Key:    req.Key,
 		Locale: req.Locale,
 		Text:   req.Text,
@@ -69,10 +68,7 @@ func (h *TranslationHandler) Create(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(response.SuccessResponse{
-		Message: "translation created successfully",
-		Data:    tr,
-	})
+	return c.Status(fiber.StatusCreated).JSON(response.NewTranslateResponseFromEntity(tr))
 }
 
 func (h *TranslationHandler) FetchAll(c *fiber.Ctx) error {
@@ -91,31 +87,36 @@ func (h *TranslationHandler) FetchAll(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(200).JSON(response.SuccessResponse{
-		Message: "translations fetched successfully",
-		Data:    translations,
-	})
+	return c.Status(200).JSON(response.NewTranslatesResponseFromEntity(translations))
 }
 
 func (h *TranslationHandler) DeleteOneById(c *fiber.Ctx) error {
 	translationId := c.Params("id", "")
 
 	if translationId == "" {
-		return c.Status(400).JSON(response.ErrorResponse{
+		return c.Status(fiber.StatusBadRequest).JSON(response.ErrorResponse{
 			Error:   "bad request",
 			Message: "translation id is required",
 		})
 	}
 
-	err := h.modifyingUseCase.DeleteOneById(c.Context(), translationId)
+	translationUUID, err := uuid.Parse(translationId)
 	if err != nil {
-		return c.Status(500).JSON(response.ErrorResponse{
+		return c.Status(fiber.StatusBadRequest).JSON(response.ErrorResponse{
+			Error:   "bad request",
+			Message: "invalid translation id",
+		})
+	}
+
+	err = h.modifyingUseCase.DeleteOneById(c.Context(), translationUUID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(response.ErrorResponse{
 			Error:   "internal server error",
 			Message: err.Error(),
 		})
 	}
 
-	return c.Status(200).JSON(response.SuccessResponse{
+	return c.Status(fiber.StatusOK).JSON(response.SuccessResponse{
 		Message: "translation deleted successfully",
 		Data:    nil,
 	})
@@ -172,8 +173,5 @@ func (h *TranslationHandler) Update(ctx *fiber.Ctx) error {
 		})
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(response.SuccessResponse{
-		Message: "translation updated successfully",
-		Data:    tr,
-	})
+	return ctx.Status(fiber.StatusOK).JSON(response.NewTranslateResponseFromEntity(tr))
 }

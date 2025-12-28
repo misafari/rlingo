@@ -19,22 +19,22 @@ migrate-create: ## Create new migration (usage: make migrate-create NAME=add_use
 	fi
 	@echo "Creating migration: $(NAME)"
 	$(MIGRATE) create -ext sql -dir $(MIGRATIONS_PATH) -seq $(NAME)
-	@echo "$(COLOR_GREEN)✓ Migration files created in $(MIGRATIONS_PATH)/"
+	@echo "✓ Migration files created in $(MIGRATIONS_PATH)/"
 
 migrate-up: ## Run all up migrations
 	@echo "Running migrations..."
 	$(MIGRATE) -path $(MIGRATIONS_PATH) -database "$(DB_URL)" up
-	@echo "$(COLOR_GREEN)✓ Migrations applied"
+	@echo "✓ Migrations applied"
 
 migrate-up-1: ## Run next up migration
 	@echo "Running next migration..."
 	$(MIGRATE) -path $(MIGRATIONS_PATH) -database "$(DB_URL)" up 1
-	@echo "$(COLOR_GREEN)✓ Migration applied"
+	@echo "✓ Migration applied"
 
 migrate-down: ## Rollback last migration
 	@echo "⚠️  Rolling back last migration..."
 	$(MIGRATE) -path $(MIGRATIONS_PATH) -database "$(DB_URL)" down 1
-	@echo "$(COLOR_GREEN)✓ Migration rolled back"
+	@echo "✓ Migration rolled back"
 
 migrate-down-all: ## Rollback all migrations
 	@echo "⚠️  This will rollback ALL migrations!"
@@ -42,7 +42,7 @@ migrate-down-all: ## Rollback all migrations
 	echo; \
 	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
 		$(MIGRATE) -path $(MIGRATIONS_PATH) -database "$(DB_URL)" down -all; \
-		echo "$(COLOR_GREEN)✓ All migrations rolled back"; \
+		echo "$✓ All migrations rolled back"; \
 	fi
 
 migrate-force: ## Force migration version (usage: make migrate-force VERSION=1)
@@ -53,7 +53,7 @@ migrate-force: ## Force migration version (usage: make migrate-force VERSION=1)
 	fi
 	@echo "⚠️  Forcing migration version to $(VERSION)..."
 	$(MIGRATE) -path $(MIGRATIONS_PATH) -database "$(DB_URL)" force $(VERSION)
-	@echo "$(COLOR_GREEN)✓ Migration version forced"
+	@echo "✓ Migration version forced"
 
 migrate-version: ## Show current migration version
 	@echo "Current migration version:"
