@@ -11,6 +11,7 @@ import (
 	"github.com/misafari/rlingo/internal/delivery/http/handler"
 	"github.com/misafari/rlingo/internal/infrastructure/database"
 	"github.com/misafari/rlingo/internal/repository/postgres"
+	"github.com/misafari/rlingo/internal/usecase/locale"
 	"github.com/misafari/rlingo/internal/usecase/project"
 	"github.com/misafari/rlingo/internal/usecase/translation"
 )
@@ -38,8 +39,11 @@ func main() {
 
 	projectRepository := postgres.NewProjectRepository(postgresqlDatabaseConnectionPool)
 	translationRepository := postgres.NewTranslationRepository(postgresqlDatabaseConnectionPool)
+	localeRepository := postgres.NewLocalRepository(postgresqlDatabaseConnectionPool)
 
 	projectCrudUseCase := project.NewCrudProjectUseCase(projectRepository)
+
+	localeCrudUseCase := locale.NewCrudLocaleUseCase(localeRepository)
 
 	translationModifyingUseCase := translation.NewCudTranslationUseCase(translationRepository)
 	translationReadUseCase := translation.NewReadTranslationUseCase(translationRepository)
@@ -63,6 +67,13 @@ func main() {
 	papi.Delete("/:id", projectHttpHandler.DeleteOneById)
 	papi.Put("/:id", projectHttpHandler.Update)
 
+	localeHttpHandler := handler.NewLocaleHttpHandler(localeCrudUseCase)
+	lapi := api.Group("/locales")
+	lapi.Get("/", localeHttpHandler.FetchAll)
+	lapi.Post("/", localeHttpHandler.Create)
+	lapi.Delete("/:id", localeHttpHandler.DeleteOneById)
+	lapi.Put("/:id", localeHttpHandler.Update)
+
 	translationHttpHandler := handler.NewTranslationHandler(translationModifyingUseCase, translationReadUseCase)
 	tapi := api.Group("/translations")
 	tapi.Post("/", translationHttpHandler.Create)
@@ -70,7 +81,7 @@ func main() {
 	tapi.Delete("/:id", translationHttpHandler.DeleteOneById)
 	tapi.Put("/:id", translationHttpHandler.Update)
 
-	if err := app.Listen(":8000"); err != nil {
+	if err = app.Listen(":8000"); err != nil {
 		log.Fatal(err)
 	}
 }

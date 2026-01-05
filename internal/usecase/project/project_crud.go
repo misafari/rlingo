@@ -2,7 +2,6 @@ package project
 
 import (
 	"context"
-	"errors"
 
 	"github.com/google/uuid"
 	"github.com/misafari/rlingo/internal/domain/project"
@@ -12,29 +11,28 @@ type CrudProjectUseCase struct {
 	repo project.Repository
 }
 
-func (u *CrudProjectUseCase) Create(ctx context.Context, tr *project.Project) error {
-	if tr.Name == "" {
-		return errors.New("project name cannot be empty")
+func (u *CrudProjectUseCase) Create(ctx context.Context, p *project.Project) error {
+	if err := project.Validate(p, false); err != nil {
+		return err
 	}
 
-	return u.repo.Create(ctx, tr)
+	return u.repo.Create(ctx, p)
 }
 
 func (u *CrudProjectUseCase) FetchAll(ctx context.Context) ([]*project.Project, error) {
-	all, err := u.repo.FetchAll(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return all, nil
+	return u.repo.FetchAll(ctx)
 }
 
 func (u *CrudProjectUseCase) DeleteOneById(ctx context.Context, uuid uuid.UUID) error {
 	return u.repo.DeleteOneById(ctx, uuid)
 }
 
-func (u *CrudProjectUseCase) Update(ctx context.Context, entity *project.Project) error {
-	return u.repo.Update(ctx, entity)
+func (u *CrudProjectUseCase) Update(ctx context.Context, p *project.Project) error {
+	if err := project.Validate(p, true); err != nil {
+		return err
+	}
+
+	return u.repo.Update(ctx, p)
 }
 
 func NewCrudProjectUseCase(repo project.Repository) *CrudProjectUseCase {

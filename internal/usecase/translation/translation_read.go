@@ -2,7 +2,6 @@ package translation
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/misafari/rlingo/internal/domain/translation"
 )
@@ -18,10 +17,5 @@ func NewReadTranslationUseCase(repo translation.Repository) *ReadTranslationUseC
 }
 
 func (u *ReadTranslationUseCase) FetchAll(ctx context.Context) ([]*translation.Translation, error) {
-	translations, err := u.repo.FetchAll(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("usecase CreateNewTranslation: %w", err)
-	}
-
-	return translations, nil
+	return u.repo.FetchAll(ctx)
 }
