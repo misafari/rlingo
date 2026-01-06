@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/misafari/rlingo/internal/delivery/http/request"
 	"github.com/misafari/rlingo/internal/delivery/http/response"
-	"github.com/misafari/rlingo/internal/domain/translation"
 	usecase "github.com/misafari/rlingo/internal/usecase/translation"
 )
 
@@ -55,10 +54,9 @@ func (h *TranslationHandler) Create(c *fiber.Ctx) error {
 		})
 	}
 
-	tr := &translation.Translation{
-		Key:    req.Key,
-		Locale: req.Locale,
-		Text:   req.Text,
+	tr, respErr := req.ToEntity()
+	if respErr != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(respErr)
 	}
 
 	if err := h.modifyingUseCase.Create(c.Context(), tr); err != nil {
@@ -140,7 +138,7 @@ func (h *TranslationHandler) Update(ctx *fiber.Ctx) error {
 	}
 
 	var req request.SaveTranslationRequest
-	if err := ctx.BodyParser(&req); err != nil {
+	if err = ctx.BodyParser(&req); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(response.ErrorResponse{
 			Error:   "bad_request",
 			Message: "cannot parse JSON",
@@ -160,11 +158,12 @@ func (h *TranslationHandler) Update(ctx *fiber.Ctx) error {
 		}
 	}
 
-	tr := &translation.Translation{
-		ID:     translationUUID,
-		Key:    req.Key,
-		Locale: req.Locale,
+	tr, respErr := req.ToEntity()
+	if respErr != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(respErr)
 	}
+
+	tr.ID = translationUUID
 
 	if err = h.modifyingUseCase.Update(ctx.Context(), tr); err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(response.ErrorResponse{

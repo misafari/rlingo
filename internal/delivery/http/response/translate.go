@@ -16,8 +16,8 @@ type TranslateResponse struct {
 func NewTranslateResponseFromEntity(entity *translation.Translation) *TranslateResponse {
 	return &TranslateResponse{
 		ID:        entity.ID.String(),
-		Key:       entity.Key,
-		Locale:    entity.Locale,
+		Key:       entity.KeyID.String(),
+		Locale:    entity.LocaleID.String(),
 		Text:      entity.Text,
 		CreatedAt: entity.CreatedAt.String(),
 		UpdatedAt: entity.UpdatedAt.String(),

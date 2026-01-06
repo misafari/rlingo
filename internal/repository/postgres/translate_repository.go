@@ -51,15 +51,16 @@ func (t *TranslationRepository) Update(ctx context.Context, translation *domain.
 	if err != nil {
 		return err
 	}
+
 	defer func(tx pgx.Tx, ctx context.Context) {
-		if err := tx.Rollback(ctx); err != nil {
+		if err = tx.Rollback(ctx); err != nil {
 			log.Printf("error rolling back transaction: %v", err)
 		}
 	}(tx, ctx)
 
-	query := `UPDATE translation SET key = $1, locale = $2, text = $3 WHERE id = $4`
+	query := `UPDATE translation SET key_id = $1, locale_id = $2, text = $3 WHERE id = $4`
 
-	tag, err := tx.Exec(ctx, query, translation.Key, translation.Locale, translation.Text, translation.ID)
+	tag, err := tx.Exec(ctx, query, translation.KeyID, translation.LocaleID, translation.Text, translation.ID)
 
 	if err != nil {
 		return fmt.Errorf("error updating translation: %w", err)
@@ -81,7 +82,8 @@ func (t *TranslationRepository) Update(ctx context.Context, translation *domain.
 }
 
 func (t *TranslationRepository) FetchAll(ctx context.Context) ([]*domain.Translation, error) {
-	query := `SELECT id, key, locale, text FROM translation`
+	query := `SELECT id, key_id, locale_id, text FROM translation`
+
 	rows, err := t.pool.Query(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching translations: %w", err)
@@ -92,7 +94,7 @@ func (t *TranslationRepository) FetchAll(ctx context.Context) ([]*domain.Transla
 
 	for rows.Next() {
 		var translation domain.Translation
-		if err = rows.Scan(&translation.ID, &translation.Key, &translation.Locale, &translation.Text); err != nil {
+		if err = rows.Scan(&translation.ID, &translation.KeyID, &translation.LocaleID, &translation.Text); err != nil {
 			return nil, fmt.Errorf("error scanning translation: %w", err)
 		}
 
@@ -107,14 +109,15 @@ func (t *TranslationRepository) Create(ctx context.Context, translation *domain.
 	if err != nil {
 		return fmt.Errorf("error starting transaction: %w", err)
 	}
+
 	defer func() {
 		if err != nil {
 			_ = tx.Rollback(ctx)
 		}
 	}()
 
-	query := `INSERT INTO translation (id, key, locale, text) VALUES ($1, $2, $3, $4) RETURNING id`
-	err = tx.QueryRow(ctx, query, uuid.New(), translation.Key, translation.Locale, translation.Text).
+	query := `INSERT INTO translation (id, key_id, locale_id, text) VALUES ($1, $2, $3, $4) RETURNING id`
+	err = tx.QueryRow(ctx, query, uuid.New(), translation.KeyID, translation.LocaleID, translation.Text).
 		Scan(&translation.ID)
 
 	if err != nil {
