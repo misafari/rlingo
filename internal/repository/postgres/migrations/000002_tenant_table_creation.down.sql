@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS tenant;
+DROP TYPE IF EXISTS tenant_plan;
+DROP TYPE IF EXISTS tenant_status;

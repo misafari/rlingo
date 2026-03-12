@@ -3,13 +3,23 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/.idea/queries/Query.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/.idea/queries/Query_1.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000001_translation_table_creation.down.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000002_project_table_creation.down.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000002_project_table_creation.up.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000003_locale_table_creation.down.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000003_locale_table_creation.up.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000004_key_table_creation.down.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000004_key_table_creation.up.sql" dialect="PostgreSQL" />
-    <file url="PROJECT" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000001_database_setup.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000002_tenant_table_creation.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000003_user_table_creation.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000003_user_table_creation.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000004_tenant_member_table_creation.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000004_tenant_member_table_creation.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000005_language_table_creation.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000006_project_table_creation.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000006_project_table_creation.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000007_project_member_table_creation.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000007_project_member_table_creation.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000008_project_language_table_creation.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000008_project_language_table_creation.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000009_translation_key_table_creation.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000010_translation_table_creation.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000010_translation_table_creation.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000011_translation_history_table_creation.down.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000011_translation_history_table_creation.up.sql" dialect="PostgreSQL" />
   </component>
 </project>

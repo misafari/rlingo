@@ -1,3 +1,0 @@
-DROP TABLE translation_key;
-DROP INDEX translation_key_project_id_tag_idx;
-DROP INDEX idx_translation_key_project_id;
