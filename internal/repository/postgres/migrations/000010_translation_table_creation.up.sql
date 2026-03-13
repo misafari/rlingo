@@ -14,3 +14,6 @@ CREATE TABLE translation
     created_at    TIMESTAMPTZ        NOT NULL DEFAULT NOW(),
     updated_at    TIMESTAMPTZ        NOT NULL DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX unique_idx_translation_key_language ON translation (key_id, language_code);
+CREATE INDEX idx_translation_key_status ON translation (key_id, status);

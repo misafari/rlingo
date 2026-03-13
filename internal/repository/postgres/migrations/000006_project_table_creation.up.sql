@@ -11,3 +11,5 @@ CREATE TABLE project
     created_at    TIMESTAMPTZ             DEFAULT now(),
     updated_at    TIMESTAMPTZ             DEFAULT now()
 );
+
+CREATE INDEX idx_project_tenant_id ON project (tenant_id);

@@ -6,3 +6,5 @@ CREATE TABLE project_member
     invited_by UUID REFERENCES users,
     joined_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX idx_project_member_user_id ON project_member (user_id);

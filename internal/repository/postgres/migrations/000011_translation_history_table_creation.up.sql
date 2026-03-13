@@ -7,3 +7,5 @@ CREATE TABLE translation_history
     changed_by     UUID        NOT NULL REFERENCES users,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX idx_translation_history_translation_id_created_at ON translation_history (translation_id, created_at DESC)

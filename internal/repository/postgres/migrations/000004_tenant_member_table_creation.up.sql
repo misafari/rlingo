@@ -4,5 +4,11 @@ CREATE TABLE tenant_member
     user_id    UUID        NOT NULL REFERENCES users,
     role       user_role   NOT NULL DEFAULT 'VIEWER',
     invited_by UUID REFERENCES users,
-    joined_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
-)
+    joined_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    PRIMARY KEY (tenant_id, user_id)
+);
+
+CREATE INDEX idx_tenant_member_user_id ON tenant_member (user_id);
+CREATE INDEX idx_tenant_member_tenant_id ON tenant_member (tenant_id);
+

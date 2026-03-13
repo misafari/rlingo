@@ -10,3 +10,6 @@ CREATE TABLE translation_key
     created_at  TIMESTAMPTZ           DEFAULT NOW(),
     updated_at  TIMESTAMPTZ           DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX unique_idx_translation_key_project_key ON translation_key (project_id, key_name);
+CREATE INDEX idx_translation_key_project_tag ON translation_key (project_id, tag);
