@@ -10,7 +10,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/misafari/rlingo/internal/delivery/http/handler"
 	"github.com/misafari/rlingo/internal/infrastructure/database"
-	"github.com/misafari/rlingo/internal/repository/postgres"
+	"github.com/misafari/rlingo/internal/db/generated"
+	"github.com/misafari/rlingo/internal/project/repository"
 	"github.com/misafari/rlingo/internal/usecase/locale"
 	"github.com/misafari/rlingo/internal/usecase/project"
 	"github.com/misafari/rlingo/internal/usecase/translation"
@@ -37,16 +38,11 @@ func main() {
 
 	defer database.Close()
 
-	projectRepository := postgres.NewProjectRepository(postgresqlDatabaseConnectionPool)
-	translationRepository := postgres.NewTranslationRepository(postgresqlDatabaseConnectionPool)
-	localeRepository := postgres.NewLocalRepository(postgresqlDatabaseConnectionPool)
+	queries := generated.New(postgresqlDatabaseConnectionPool)
 
-	projectCrudUseCase := project.NewCrudProjectUseCase(projectRepository)
+	projectRepository := project.NewRepository(queries, postgresqlDatabaseConnectionPool)
 
-	localeCrudUseCase := locale.NewCrudLocaleUseCase(localeRepository)
-
-	translationModifyingUseCase := translation.NewCudTranslationUseCase(translationRepository)
-	translationReadUseCase := translation.NewReadTranslationUseCase(translationRepository)
+	projectService := project.NewService(projectRepository)
 
 	app := fiber.New(fiber.Config{
 		AppName: "Rlingo API v1.0",
@@ -66,20 +62,6 @@ func main() {
 	papi.Post("/", projectHttpHandler.Create)
 	papi.Delete("/:id", projectHttpHandler.DeleteOneById)
 	papi.Put("/:id", projectHttpHandler.Update)
-
-	localeHttpHandler := handler.NewLocaleHttpHandler(localeCrudUseCase)
-	lapi := api.Group("/locales")
-	lapi.Get("/", localeHttpHandler.FetchAll)
-	lapi.Post("/", localeHttpHandler.Create)
-	lapi.Delete("/:id", localeHttpHandler.DeleteOneById)
-	lapi.Put("/:id", localeHttpHandler.Update)
-
-	translationHttpHandler := handler.NewTranslationHandler(translationModifyingUseCase, translationReadUseCase)
-	tapi := api.Group("/translations")
-	tapi.Post("/", translationHttpHandler.Create)
-	tapi.Get("/", translationHttpHandler.FetchAll)
-	tapi.Delete("/:id", translationHttpHandler.DeleteOneById)
-	tapi.Put("/:id", translationHttpHandler.Update)
 
 	if err = app.Listen(":8000"); err != nil {
 		log.Fatal(err)

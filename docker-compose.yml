@@ -10,7 +10,7 @@ services:
     ports:
       - "5455:5432"
     volumes:
-      - rlingo_db_data:/var/lib/postgresql/data
+      - rlingo_db_data:/var/lib/postgres/data
 
 volumes:
   rlingo_db_data:

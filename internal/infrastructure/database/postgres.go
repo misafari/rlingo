@@ -23,7 +23,7 @@ type Config struct {
 
 func Connect(ctx context.Context, cfg Config) (*pgxpool.Pool, error) {
 	connectionStr := fmt.Sprintf(
-		"postgresql://%s:%s@%s:%d/%s?sslmode=disable",
+		"postgres://%s:%s@%s:%d/%s?sslmode=disable",
 		cfg.User,
 		cfg.Password,
 		cfg.Host,

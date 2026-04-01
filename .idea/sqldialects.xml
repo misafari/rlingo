@@ -3,7 +3,5 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/.idea/queries/Query.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/.idea/queries/Query_1.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000013_insert_master_identity.down.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/internal/repository/postgres/migrations/000013_insert_master_identity.up.sql" dialect="PostgreSQL" />
   </component>
 </project>

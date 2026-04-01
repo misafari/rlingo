@@ -1,4 +1,11 @@
-.PHONY:migrate-up migrate-down migrate-create migrate-force
+.PHONY: migrate-up migrate-down migrate-create migrate-force sqlc-version
+
+GO_GOPATH := $(shell go env GOPATH)
+ifeq ($(OS),Windows_NT)
+SQLC := $(GO_GOPATH)/bin/sqlc.exe
+else
+SQLC := $(GO_GOPATH)/bin/sqlc
+endif
 
 DB_HOST=localhost
 DB_PORT=5455
@@ -60,3 +67,6 @@ migrate-version: ## Show current migration version
 	@$(MIGRATE) -path $(MIGRATIONS_PATH) -database "$(DB_URL)" version
 
 migrate-status: migrate-version
+
+sqlc-version: ## Show sqlc version
+	@$(SQLC) version
