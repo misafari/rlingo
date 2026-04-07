@@ -1,13 +1,15 @@
-package dto
+package http_dto
+
+import "github.com/misafari/rlingo/internal/project/domain"
 
 type UpdateProjectRequest struct {
-	Name     string    `json:"name" validate:"required,min=3,max=100"`
+	Name        string `json:"name" validate:"required,min=3,max=100"`
 	Description string `json:"description" validate:"required,min=3,max=100"`
 }
 
 func (r *UpdateProjectRequest) ToEntity() (*domain.Project, error) {
 	return &domain.Project{
-		Name: r.Name,
+		Name:        r.Name,
 		Description: r.Description,
 	}, nil
 }

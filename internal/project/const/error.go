@@ -1,4 +1,4 @@
-package error
+package _const
 
 import "errors"
 
@@ -19,9 +19,9 @@ var (
 
 	ErrForbidden = errors.New("project: insufficient permissions for this action")
 
-	ErrUnauthenticated = errors.New("project: request has no authenticated user")
+	ErrUnauthenticated       = errors.New("project: request has no authenticated user")
 	ErrProjectCreationFailed = errors.New("project: failed to create project")
 	ErrProjectDeletionFailed = errors.New("project: failed to delete project")
 	ErrProjectFetchingFailed = errors.New("project: failed to fetch projects")
-	ErrProjectUpdateFailed = errors.New("project: failed to update project")
+	ErrProjectUpdateFailed   = errors.New("project: failed to update project")
 )

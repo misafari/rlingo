@@ -7,7 +7,9 @@ package db
 import (
 	"database/sql/driver"
 	"fmt"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -314,15 +316,15 @@ func (ns NullUsersStatus) Value() (driver.Value, error) {
 }
 
 type Invitation struct {
-	ID           pgtype.UUID
-	ProjectID    pgtype.UUID
-	TenantID     pgtype.UUID
+	ID           uuid.UUID
+	ProjectID    uuid.UUID
+	TenantID     uuid.UUID
 	InviteeEmail string
 	InviteeRole  UserRole
 	Token        string
 	Status       InvitationStatus
 	ExpiresAt    pgtype.Timestamptz
-	InvitedBy    pgtype.UUID
+	InvitedBy    uuid.UUID
 	CreatedAt    pgtype.Timestamptz
 }
 
@@ -334,91 +336,91 @@ type Language struct {
 }
 
 type Project struct {
-	ID          pgtype.UUID
-	TenantID    pgtype.UUID
+	ID          uuid.UUID
+	TenantID    uuid.UUID
 	Name        string
 	Description string
 	Status      ProjectStatus
-	CreatedBy   pgtype.UUID
-	CreatedAt   pgtype.Timestamptz
-	UpdatedAt   pgtype.Timestamptz
+	CreatedBy   uuid.UUID
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 type ProjectLanguage struct {
-	ProjectID    pgtype.UUID
+	ProjectID    uuid.UUID
 	LanguageCode string
 	IsBase       bool
-	EnabledAt    pgtype.Timestamptz
+	EnabledAt    time.Time
 }
 
 type ProjectMember struct {
-	ProjectID pgtype.UUID
-	UserID    pgtype.UUID
+	ProjectID uuid.UUID
+	UserID    uuid.UUID
 	Role      UserRole
 	InvitedBy pgtype.UUID
 	JoinedAt  pgtype.Timestamptz
 }
 
 type Tenant struct {
-	ID        pgtype.UUID
+	ID        uuid.UUID
 	Slug      string
 	Name      string
 	Plan      TenantPlan
 	Status    TenantStatus
-	CreatedAt pgtype.Timestamptz
-	UpdatedAt pgtype.Timestamptz
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type TenantMember struct {
-	TenantID  pgtype.UUID
-	UserID    pgtype.UUID
+	TenantID  uuid.UUID
+	UserID    uuid.UUID
 	Role      UserRole
 	InvitedBy pgtype.UUID
 	JoinedAt  pgtype.Timestamptz
 }
 
 type Translation struct {
-	ID           pgtype.UUID
-	KeyID        pgtype.UUID
+	ID           uuid.UUID
+	KeyID        uuid.UUID
 	LanguageCode string
-	Value        pgtype.Text
+	Value        string
 	PluralForms  []byte
 	Status       TranslationStatus
-	TranslatedBy pgtype.UUID
+	TranslatedBy uuid.UUID
 	ReviewedBy   pgtype.UUID
-	ReviewedAt   pgtype.Timestamptz
+	ReviewedAt   time.Time
 	CreatedAt    pgtype.Timestamptz
 	UpdatedAt    pgtype.Timestamptz
 }
 
 type TranslationHistory struct {
-	ID            pgtype.UUID
-	TranslationID pgtype.UUID
-	OldValue      pgtype.Text
-	NewValue      pgtype.Text
-	ChangedBy     pgtype.UUID
+	ID            uuid.UUID
+	TranslationID uuid.UUID
+	OldValue      string
+	NewValue      string
+	ChangedBy     uuid.UUID
 	CreatedAt     pgtype.Timestamptz
 }
 
 type TranslationKey struct {
-	ID          pgtype.UUID
-	ProjectID   pgtype.UUID
+	ID          uuid.UUID
+	ProjectID   uuid.UUID
 	KeyName     string
-	Description pgtype.Text
+	Description string
 	Tag         []string
 	IsPlural    bool
-	CreatedBy   pgtype.UUID
-	CreatedAt   pgtype.Timestamptz
-	UpdatedAt   pgtype.Timestamptz
+	CreatedBy   uuid.UUID
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 type User struct {
-	ID           pgtype.UUID
+	ID           uuid.UUID
 	Email        string
 	IsSso        bool
 	FullName     pgtype.Text
 	PasswordHash pgtype.Text
 	Status       UsersStatus
-	LastLoginAt  pgtype.Timestamptz
-	CreatedAt    pgtype.Timestamptz
+	LastLoginAt  time.Time
+	CreatedAt    time.Time
 }

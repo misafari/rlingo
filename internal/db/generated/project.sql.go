@@ -7,8 +7,9 @@ package db
 
 import (
 	"context"
+	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const createProject = `-- name: CreateProject :one
@@ -18,17 +19,17 @@ RETURNING id
 `
 
 type CreateProjectParams struct {
-	ID          pgtype.UUID
-	TenantID    pgtype.UUID
+	ID          uuid.UUID
+	TenantID    uuid.UUID
 	Name        string
 	Description string
 	Status      ProjectStatus
-	CreatedBy   pgtype.UUID
-	CreatedAt   pgtype.Timestamptz
-	UpdatedAt   pgtype.Timestamptz
+	CreatedBy   uuid.UUID
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
-func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (pgtype.UUID, error) {
+func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (uuid.UUID, error) {
 	row := q.db.QueryRow(ctx, createProject,
 		arg.ID,
 		arg.TenantID,
@@ -39,7 +40,7 @@ func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (p
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
-	var id pgtype.UUID
+	var id uuid.UUID
 	err := row.Scan(&id)
 	return id, err
 }
@@ -51,8 +52,8 @@ AND tenant_id = $2
 `
 
 type DeleteProjectByIDAndTenantIDParams struct {
-	ID       pgtype.UUID
-	TenantID pgtype.UUID
+	ID       uuid.UUID
+	TenantID uuid.UUID
 }
 
 func (q *Queries) DeleteProjectByIDAndTenantID(ctx context.Context, arg DeleteProjectByIDAndTenantIDParams) error {
@@ -67,8 +68,8 @@ AND tenant_id = $2
 `
 
 type GetProjectByIDAndTenantIDParams struct {
-	ID       pgtype.UUID
-	TenantID pgtype.UUID
+	ID       uuid.UUID
+	TenantID uuid.UUID
 }
 
 func (q *Queries) GetProjectByIDAndTenantID(ctx context.Context, arg GetProjectByIDAndTenantIDParams) (Project, error) {
@@ -93,7 +94,7 @@ WHERE tenant_id = $1
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListProjectsByTenantID(ctx context.Context, tenantID pgtype.UUID) ([]Project, error) {
+func (q *Queries) ListProjectsByTenantID(ctx context.Context, tenantID uuid.UUID) ([]Project, error) {
 	rows, err := q.db.Query(ctx, listProjectsByTenantID, tenantID)
 	if err != nil {
 		return nil, err
@@ -134,9 +135,9 @@ type UpdateProjectParams struct {
 	Name        string
 	Description string
 	Status      ProjectStatus
-	UpdatedAt   pgtype.Timestamptz
-	ID          pgtype.UUID
-	TenantID    pgtype.UUID
+	UpdatedAt   time.Time
+	ID          uuid.UUID
+	TenantID    uuid.UUID
 }
 
 func (q *Queries) UpdateProject(ctx context.Context, arg UpdateProjectParams) (Project, error) {

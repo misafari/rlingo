@@ -2,10 +2,11 @@ package project
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/misafari/rlingo/internal/project/const"
 	"github.com/misafari/rlingo/internal/project/domain"
-	"github.com/misafari/rlingo/internal/db/generated"
 )
 
 type Service struct {
@@ -14,7 +15,7 @@ type Service struct {
 
 func (u *Service) Create(ctx context.Context, project *domain.Project) error {
 	if project == nil {
-		return error2.ErrProjectIsNil
+		return _const.ErrProjectIsNil
 	}
 
 	now := time.Now().UTC()
@@ -41,10 +42,22 @@ func (u *Service) DeleteOneById(ctx context.Context, projectID uuid.UUID) error 
 	err := u.repository.DeleteOneById(ctx, projectID, tenantID)
 
 	if err != nil {
-		return error2.ErrProjectDeletionFailed
+		return _const.ErrProjectDeletionFailed
 	}
 
 	return nil
+}
+
+func (u *Service) FetchOneByID(ctx context.Context, ID uuid.UUID) (*domain.Project, error) {
+	tenantID := uuid.New()
+
+	projects, err := u.repository.FetchOneByID(ctx, ID, tenantID)
+
+	if err != nil {
+		return nil, _const.ErrProjectFetchingFailed
+	}
+
+	return projects, nil
 }
 
 func (u *Service) FetchAll(ctx context.Context) ([]*domain.Project, error) {
@@ -53,21 +66,18 @@ func (u *Service) FetchAll(ctx context.Context) ([]*domain.Project, error) {
 	projects, err := u.repository.FetchAll(ctx, tenantID)
 
 	if err != nil {
-		return nil, error2.ErrProjectFetchingFailed
+		return nil, _const.ErrProjectFetchingFailed
 	}
 
 	return projects, nil
 }
 
 func (u *Service) Update(ctx context.Context, project *domain.Project) error {
-	if err := project.Validate(true); err != nil {
+	if err := project.Validate(); err != nil {
 		return err
 	}
 
-	tenantID := uuid.New()
-	now := time.Now().UTC()
-
-	_, err := u.repository.Update(ctx, project)
+	err := u.repository.Update(ctx, project)
 	if err != nil {
 		return err
 	}
@@ -75,8 +85,8 @@ func (u *Service) Update(ctx context.Context, project *domain.Project) error {
 	return nil
 }
 
-func NewProjectService(queries *generated.Queries) *Service {
+func NewProjectService(repository *Repository) *Service {
 	return &Service{
-		queries: queries,
+		repository: repository,
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	error2 "github.com/misafari/rlingo/internal/project/error"
+	"github.com/misafari/rlingo/internal/project/const"
 )
 
 type ProjectStatus string
@@ -28,7 +28,7 @@ type Project struct {
 
 func (p *Project) Validate() error {
 	if p.ID == uuid.Nil {
-		return error2.ErrMissingProjectID
+		return _const.ErrMissingProjectID
 	}
 
 	return p.ValidateWithoutIDCheck()
@@ -36,15 +36,15 @@ func (p *Project) Validate() error {
 
 func (p *Project) ValidateWithoutIDCheck() error {
 	if p.TenantID == uuid.Nil {
-		return error2.ErrMissingTenantID
+		return _const.ErrMissingTenantID
 	}
 
 	if p.Name == "" {
-		return error2.ErrInvalidName
+		return _const.ErrInvalidName
 	}
 
 	if p.CreatedBy == uuid.Nil {
-		return error2.ErrMissingCreatedBy
+		return _const.ErrMissingCreatedBy
 	}
 
 	return nil
@@ -52,11 +52,11 @@ func (p *Project) ValidateWithoutIDCheck() error {
 
 func NewProject(tenantID, createdBy uuid.UUID, name, description string) (*Project, error) {
 	if name == "" {
-		return nil, error2.ErrInvalidName
+		return nil, _const.ErrInvalidName
 	}
 
 	if tenantID == uuid.Nil {
-		return nil, error2.ErrMissingTenantID
+		return nil, _const.ErrMissingTenantID
 	}
 
 	now := time.Now().UTC()
@@ -74,7 +74,7 @@ func NewProject(tenantID, createdBy uuid.UUID, name, description string) (*Proje
 
 func (p *Project) Update(name, description string) error {
 	if name == "" && description == "" {
-		return error2.ErrNothingToUpdate
+		return _const.ErrNothingToUpdate
 	}
 
 	if name != "" {

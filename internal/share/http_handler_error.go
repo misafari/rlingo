@@ -8,7 +8,7 @@ type ErrorResponse struct {
 }
 
 var (
-	ErrInvalidJson      = ErrorResponse{
+	ErrInvalidJson = ErrorResponse{
 		Error:   "bad_request",
 		Message: "cannot parse JSON",
 	}
@@ -32,7 +32,9 @@ func InternalServerErrorResponse(c *fiber.Ctx, err error) error {
 	})
 }
 
-type SuccessResponse struct {
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
+func NotFoundErrorResponse(c *fiber.Ctx, msg string) error {
+	return c.Status(fiber.StatusNotFound).JSON(ErrorResponse{
+		Error:   "resource_not_found",
+		Message: msg,
+	})
 }
