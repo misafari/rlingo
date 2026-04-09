@@ -9,13 +9,21 @@ import (
 	"github.com/misafari/rlingo/internal/project/domain"
 )
 
-type Service struct {
+type Service interface {
+	FetchAll(c context.Context) ([]*domain.Project, error)
+	FetchOneByID(c context.Context, id uuid.UUID) (*domain.Project, error)
+	Create(c context.Context, project *domain.Project) (*domain.Project, error)
+	Update(c context.Context, project *domain.Project) error
+	DeleteOneById(c context.Context, projectID uuid.UUID) error
+}
+
+type serviceImpl struct {
 	repository *Repository
 }
 
-func (u *Service) Create(ctx context.Context, project *domain.Project) error {
+func (u *serviceImpl) Create(ctx context.Context, project *domain.Project) (*domain.Project, error) {
 	if project == nil {
-		return _const.ErrProjectIsNil
+		return nil, _const.ErrProjectIsNil
 	}
 
 	now := time.Now().UTC()
@@ -30,13 +38,18 @@ func (u *Service) Create(ctx context.Context, project *domain.Project) error {
 	project.UpdatedAt = now
 
 	if err := project.ValidateWithoutIDCheck(); err != nil {
-		return err
+		return nil, err
 	}
 
-	return u.repository.Create(ctx, project)
+	savedProject, err := u.repository.Create(ctx, project)
+	if err != nil {
+		return nil, err
+	}
+
+	return savedProject, nil
 }
 
-func (u *Service) DeleteOneById(ctx context.Context, projectID uuid.UUID) error {
+func (u *serviceImpl) DeleteOneById(ctx context.Context, projectID uuid.UUID) error {
 	tenantID := uuid.New()
 
 	err := u.repository.DeleteOneById(ctx, projectID, tenantID)
@@ -48,7 +61,7 @@ func (u *Service) DeleteOneById(ctx context.Context, projectID uuid.UUID) error 
 	return nil
 }
 
-func (u *Service) FetchOneByID(ctx context.Context, ID uuid.UUID) (*domain.Project, error) {
+func (u *serviceImpl) FetchOneByID(ctx context.Context, ID uuid.UUID) (*domain.Project, error) {
 	tenantID := uuid.New()
 
 	projects, err := u.repository.FetchOneByID(ctx, ID, tenantID)
@@ -60,7 +73,7 @@ func (u *Service) FetchOneByID(ctx context.Context, ID uuid.UUID) (*domain.Proje
 	return projects, nil
 }
 
-func (u *Service) FetchAll(ctx context.Context) ([]*domain.Project, error) {
+func (u *serviceImpl) FetchAll(ctx context.Context) ([]*domain.Project, error) {
 	tenantID := uuid.New()
 
 	projects, err := u.repository.FetchAll(ctx, tenantID)
@@ -72,7 +85,7 @@ func (u *Service) FetchAll(ctx context.Context) ([]*domain.Project, error) {
 	return projects, nil
 }
 
-func (u *Service) Update(ctx context.Context, project *domain.Project) error {
+func (u *serviceImpl) Update(ctx context.Context, project *domain.Project) error {
 	if err := project.Validate(); err != nil {
 		return err
 	}
@@ -85,8 +98,8 @@ func (u *Service) Update(ctx context.Context, project *domain.Project) error {
 	return nil
 }
 
-func NewProjectService(repository *Repository) *Service {
-	return &Service{
+func NewProjectService(repository *Repository) Service {
+	return &serviceImpl{
 		repository: repository,
 	}
 }

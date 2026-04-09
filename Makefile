@@ -70,3 +70,6 @@ migrate-status: migrate-version
 
 sqlc-version: ## Show sqlc version
 	@$(SQLC) version
+
+sqlc-generate: ## Show sqlc version
+	@$(SQLC) generate

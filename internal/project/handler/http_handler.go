@@ -1,26 +1,30 @@
 package handler
 
 import (
-	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"github.com/misafari/rlingo/internal/delivery/http/request"
 	"github.com/misafari/rlingo/internal/project"
-	"github.com/misafari/rlingo/internal/project/const"
 	"github.com/misafari/rlingo/internal/project/domain"
 	dto "github.com/misafari/rlingo/internal/project/handler/http_dto"
-	"github.com/misafari/rlingo/internal/share"
+	appdto "github.com/misafari/rlingo/internal/share/dto"
+	apperror "github.com/misafari/rlingo/internal/share/errors"
+	"github.com/misafari/rlingo/internal/share/utils"
 )
 
 type HttpHandler struct {
-	service   *project.Service
-	validator *validator.Validate
+	service project.Service
+}
+
+func NewHttpHandler(service project.Service) *HttpHandler {
+	return &HttpHandler{
+		service: service,
+	}
 }
 
 func (h *HttpHandler) GetAll(c *fiber.Ctx) error {
 	all, err := h.service.FetchAll(c.Context())
 	if err != nil {
-		return share.InternalServerErrorResponse(c, err)
+		return apperror.Internal(err.Error())
 	}
 
 	return c.Status(fiber.StatusOK).JSON(dto.NewProjectsResponseFromEntities(all))
@@ -29,34 +33,30 @@ func (h *HttpHandler) GetAll(c *fiber.Ctx) error {
 func (h *HttpHandler) GetOneByID(c *fiber.Ctx) error {
 	id := c.Params("id", "")
 	if id == "" {
-		return share.ValidationErrorResponse(c, _const.ErrMissingProjectID)
+		return apperror.BadRequest("id is request", nil)
 	}
 
 	projectUUID, err := uuid.Parse(id)
 	if err != nil {
-		return share.ValidationErrorResponse(c, err)
+		return apperror.BadRequest("uuid is not valid", err)
 	}
 
 	fetchedProject, err := h.service.FetchOneByID(c.Context(), projectUUID)
 	if err != nil {
-		return share.InternalServerErrorResponse(c, err)
+		return apperror.Internal(err.Error())
 	}
 
 	if fetchedProject == nil {
-		return share.NotFoundErrorResponse(c, "project not found")
+		return apperror.NotFoundF("project not found with id: %s", id)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(dto.NewProjectResponseFromEntity(fetchedProject))
 }
 
 func (h *HttpHandler) Create(c *fiber.Ctx) error {
-	var req dto.UpdateProjectRequest
-	if err := c.BodyParser(&req); err != nil {
-		return share.JsonParsingErrorResponse(c)
-	}
-
-	if err := h.validator.Struct(req); err != nil {
-		return share.ValidationErrorResponse(c, err)
+	var req dto.CreateProjectRequest
+	if err := utils.ParseAndValidate(c, &req); err != nil {
+		return err
 	}
 
 	entity := &domain.Project{
@@ -64,39 +64,28 @@ func (h *HttpHandler) Create(c *fiber.Ctx) error {
 		Description: req.Description,
 	}
 
-	if err := h.service.Create(c.Context(), entity); err != nil {
-		return share.InternalServerErrorResponse(c, err)
+	savedProject, err := h.service.Create(c.Context(), entity)
+	if err != nil {
+		return apperror.Internal(err.Error())
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(dto.NewCreateProjectResponseFromEntity(entity))
+	return c.Status(fiber.StatusCreated).JSON(dto.NewCreateProjectResponseFromEntity(savedProject))
 }
 
 func (h *HttpHandler) Update(c *fiber.Ctx) error {
 	id := c.Params("id", "")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(share.ErrorResponse{
-			Error: "bad_request", Message: "id is required",
-		})
+		return apperror.BadRequest("id is request", nil)
 	}
 
 	projectUUID, err := uuid.Parse(id)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(share.ErrorResponse{
-			Error: "bad_request", Message: "invalid id",
-		})
+		return apperror.BadRequest("id is not valid", nil)
 	}
 
-	var req request.SaveProjectRequest
-	if err = c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(share.ErrorResponse{
-			Error: "bad_request", Message: "cannot parse JSON",
-		})
-	}
-
-	if err = h.validator.Struct(req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(share.ErrorResponse{
-			Error: "bad_request", Message: err.Error(),
-		})
+	var req dto.CreateProjectRequest
+	if err := utils.ParseAndValidate(c, &req); err != nil {
+		return err
 	}
 
 	entity := &domain.Project{
@@ -106,7 +95,7 @@ func (h *HttpHandler) Update(c *fiber.Ctx) error {
 
 	err = h.service.Update(c.Context(), entity)
 	if err != nil {
-		return share.InternalServerErrorResponse(c, err)
+		return apperror.Internal(err.Error())
 	}
 
 	return c.Status(fiber.StatusOK).JSON(dto.NewProjectResponseFromEntity(entity))
@@ -115,19 +104,19 @@ func (h *HttpHandler) Update(c *fiber.Ctx) error {
 func (h *HttpHandler) DeleteOneById(c *fiber.Ctx) error {
 	id := c.Params("id", "")
 	if id == "" {
-		return share.ValidationErrorResponse(c, _const.ErrMissingProjectID)
+		return apperror.BadRequest("id is request", nil)
 	}
 
 	projectUUID, err := uuid.Parse(id)
 	if err != nil {
-		return share.ValidationErrorResponse(c, err)
+		return apperror.BadRequest("id is not valid", nil)
 	}
 
-	if err := h.service.DeleteOneById(c.Context(), projectUUID); err != nil {
-		return share.InternalServerErrorResponse(c, err)
+	if err = h.service.DeleteOneById(c.Context(), projectUUID); err != nil {
+		return apperror.Internal(err.Error())
 	}
 
-	return c.Status(fiber.StatusNoContent).JSON(share.SuccessResponse{
-		Message: "Project deleted successfully",
+	return c.Status(fiber.StatusNoContent).JSON(appdto.SuccessResponse{
+		Message: "Project is deleted successfully",
 	})
 }

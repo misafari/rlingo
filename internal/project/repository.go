@@ -14,10 +14,10 @@ type Repository struct {
 	pool    *pgxpool.Pool
 }
 
-func (r *Repository) Create(ctx context.Context, project *projectDomain.Project) error {
+func (r *Repository) Create(ctx context.Context, project *projectDomain.Project) (*projectDomain.Project, error) {
 	tx, err := r.pool.Begin(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer func() {
@@ -28,7 +28,7 @@ func (r *Repository) Create(ctx context.Context, project *projectDomain.Project)
 
 	qtx := r.queries.WithTx(tx)
 
-	_, err = qtx.CreateProject(ctx, db.CreateProjectParams{
+	id, err := qtx.CreateProject(ctx, db.CreateProjectParams{
 		ID:          project.ID,
 		TenantID:    project.TenantID,
 		Name:        project.Name,
@@ -40,10 +40,16 @@ func (r *Repository) Create(ctx context.Context, project *projectDomain.Project)
 	})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return tx.Commit(ctx)
+	if err = tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	project.ID = id
+
+	return project, nil
 }
 
 func (r *Repository) Update(ctx context.Context, project *projectDomain.Project) error {
