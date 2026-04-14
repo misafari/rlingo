@@ -18,7 +18,7 @@ type Service interface {
 }
 
 type serviceImpl struct {
-	repository *Repository
+	repository Repository
 }
 
 func (u *serviceImpl) Create(ctx context.Context, project *domain.Project) (*domain.Project, error) {
@@ -98,7 +98,7 @@ func (u *serviceImpl) Update(ctx context.Context, project *domain.Project) error
 	return nil
 }
 
-func NewProjectService(repository *Repository) Service {
+func NewProjectService(repository Repository) Service {
 	return &serviceImpl{
 		repository: repository,
 	}

@@ -11,12 +11,12 @@ import (
 	"github.com/misafari/rlingo/internal/project/domain"
 	projectHandler "github.com/misafari/rlingo/internal/project/handler"
 	"github.com/misafari/rlingo/internal/share/middleware"
-	"github.com/misafari/rlingo/tests/project/mock"
+	"github.com/misafari/rlingo/tests/project/utils"
 )
 
 func TestProjectHandler_GetAll_ReturnsOK(t *testing.T) {
 	app := fiber.New(fiber.Config{ErrorHandler: middleware.ErrorHandler})
-	mockService := mock.NewMockProjectServiceWithFetchAllFn(
+	mockService := utils.NewMockProjectServiceWithFetchAllFn(
 		[]*domain.Project{{ID: uuid.MustParse("ea772f3c-a5a0-4121-a714-981f40222ef4"), Name: "Core"}},
 		nil,
 	)

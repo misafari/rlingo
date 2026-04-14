@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -39,7 +40,7 @@ func (p *Project) ValidateWithoutIDCheck() error {
 		return _const.ErrMissingTenantID
 	}
 
-	if p.Name == "" {
+	if p.Name == "" || strings.TrimSpace(p.Name) == "" {
 		return _const.ErrInvalidName
 	}
 

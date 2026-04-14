@@ -12,7 +12,7 @@ import (
 	projectHandler "github.com/misafari/rlingo/internal/project/handler"
 	appdto "github.com/misafari/rlingo/internal/share/dto"
 	"github.com/misafari/rlingo/internal/share/middleware"
-	"github.com/misafari/rlingo/tests/project/mock"
+	"github.com/misafari/rlingo/tests/project/utils"
 )
 
 func TestProjectHandler_GetOneByID_ReturnsBadRequestWhenIDMissing(t *testing.T) {
@@ -77,7 +77,7 @@ func TestProjectHandler_GetOneByID_ReturnsBadRequestWhenIDInvalid(t *testing.T) 
 func TestProjectHandler_GetOneByID_ReturnsOKWhenProjectFound(t *testing.T) {
 	app := fiber.New(fiber.Config{ErrorHandler: middleware.ErrorHandler})
 	projectID := uuid.MustParse("ef4ec8e9-f6bb-4ce7-bec6-fd32cec9afca")
-	mockService := mock.NewMockProjectServiceWithFetchOneByIDFn(
+	mockService := utils.NewMockProjectServiceWithFetchOneByIDFn(
 		&domain.Project{
 			ID:   projectID,
 			Name: "Docs",

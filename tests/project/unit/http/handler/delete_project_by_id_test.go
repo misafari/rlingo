@@ -11,7 +11,7 @@ import (
 	projectHandler "github.com/misafari/rlingo/internal/project/handler"
 	appdto "github.com/misafari/rlingo/internal/share/dto"
 	"github.com/misafari/rlingo/internal/share/middleware"
-	"github.com/misafari/rlingo/tests/project/mock"
+	"github.com/misafari/rlingo/tests/project/utils"
 )
 
 func TestProjectHandler_DeleteOneById_ReturnsBadRequestWhenIDMissing(t *testing.T) {
@@ -46,7 +46,7 @@ func TestProjectHandler_DeleteOneById_ReturnsBadRequestWhenIDMissing(t *testing.
 func TestProjectHandler_DeleteOneById_ReturnsNoContentWhenDeleted(t *testing.T) {
 	app := fiber.New(fiber.Config{ErrorHandler: middleware.ErrorHandler})
 	projectID := uuid.MustParse("4f7af2c7-6b95-4721-9cc5-c880027f34e5")
-	mockService := mock.NewMockProjectServiceWithDeleteOneByIdFn(nil)
+	mockService := utils.NewMockProjectServiceWithDeleteOneByIdFn(nil)
 	h := projectHandler.NewHttpHandler(mockService)
 
 	app.Delete("/projects/:id", h.DeleteOneById)

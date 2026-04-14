@@ -33,6 +33,7 @@ func ParseAndValidate(ctx *fiber.Ctx, dst interface{}) error {
 	if err := ctx.BodyParser(dst); err != nil {
 		return apperrors.BadRequest("Invalid request body", nil)
 	}
+
 	if err := GetValidator().Struct(dst); err != nil {
 		return err // Let the global handler parse validator.ValidationErrors
 	}
