@@ -9,4 +9,5 @@ import (
 type UserRepository interface {
 	EmailExists(ctx context.Context, email string) (bool, error)
 	CreateNewUser(ctx context.Context, user *domain.User) (*domain.User, error)
+	FindByEmail(ctx context.Context, email string) (*domain.User, error)
 }

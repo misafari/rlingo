@@ -26,7 +26,23 @@ func (h *HttpHandler) Signup(c *fiber.Ctx) error {
 		Status:       domain.UsersStatusACTIVE,
 	}
 
-	savedProject, err := h.service.SignUp(c.Context(), entity)
+	savedProject, err := h.service.Signup(c.Context(), entity)
+	if err != nil {
+		return apperror.Internal(err.Error())
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(
+		dto.NewUserSignupResponseFromEntity(savedProject),
+	)
+}
+
+func (h *HttpHandler) Signin(c *fiber.Ctx) error {
+	var req dto.UserSigninRequest
+	if err := utils.ParseAndValidate(c, &req); err != nil {
+		return err
+	}
+
+	savedProject, err := h.service.Signin(c.Context(), req.Email, req.Password)
 	if err != nil {
 		return apperror.Internal(err.Error())
 	}

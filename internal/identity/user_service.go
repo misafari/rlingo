@@ -12,7 +12,8 @@ import (
 )
 
 type UserService interface {
-	SignUp(ctx context.Context, user *domain.User) (*SignUpResult, error)
+	Signup(ctx context.Context, user *domain.User) (*SignInResult, error)
+	Signin(ctx context.Context, email, pass string) (*SignInResult, error)
 }
 
 type userServiceImpl struct {
@@ -20,7 +21,7 @@ type userServiceImpl struct {
 	tokenService TokenService
 }
 
-type SignUpResult struct {
+type SignInResult struct {
 	UserID      uuid.UUID
 	Email       string
 	FullName    string
@@ -28,7 +29,7 @@ type SignUpResult struct {
 	ExpiresAt   time.Time
 }
 
-func (u *userServiceImpl) SignUp(ctx context.Context, user *domain.User) (*SignUpResult, error) {
+func (u *userServiceImpl) Signup(ctx context.Context, user *domain.User) (*SignInResult, error) {
 	user.Email = strings.ToLower(strings.TrimSpace(user.Email))
 	user.FullName = strings.TrimSpace(user.FullName)
 
@@ -54,17 +55,51 @@ func (u *userServiceImpl) SignUp(ctx context.Context, user *domain.User) (*SignU
 		return nil, fmt.Errorf("SignUp: create new user: %w", err)
 	}
 
-	fmt.Println(newUser.ID)
-
 	token, ext, err := u.tokenService.IssueToken(newUser.ID)
 	if err != nil {
 		return nil, fmt.Errorf("SignUp: issue token: %w", err)
 	}
 
-	return &SignUpResult{
+	return &SignInResult{
 		UserID:      newUser.ID,
 		Email:       newUser.Email,
 		FullName:    newUser.FullName,
+		AccessToken: token,
+		ExpiresAt:   ext,
+	}, nil
+}
+
+func (u *userServiceImpl) Signin(ctx context.Context, email, pass string) (*SignInResult, error) {
+	email = strings.ToLower(strings.TrimSpace(email))
+	pass = strings.TrimSpace(pass)
+
+	if email == "" || pass == "" {
+		return nil, fmt.Errorf("SignIn: email or password is empty")
+	}
+
+	fetchedUser, err := u.repository.FindByEmail(ctx, email)
+	if err != nil {
+		return nil, fmt.Errorf("SignIn: find by email: %w", err)
+	}
+
+	if fetchedUser == nil {
+		return nil, fmt.Errorf("SignIn: user not found")
+	}
+
+	err = fetchedUser.CheckPassword(pass)
+	if err != nil {
+		return nil, fmt.Errorf("SignIn: check password failed: %w", err)
+	}
+
+	token, ext, err := u.tokenService.IssueToken(fetchedUser.ID)
+	if err != nil {
+		return nil, fmt.Errorf("SignIn: issue token: %w", err)
+	}
+
+	return &SignInResult{
+		UserID:      fetchedUser.ID,
+		Email:       fetchedUser.Email,
+		FullName:    fetchedUser.FullName,
 		AccessToken: token,
 		ExpiresAt:   ext,
 	}, nil

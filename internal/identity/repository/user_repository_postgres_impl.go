@@ -87,6 +87,45 @@ func (u *userRepositoryPostgresImpl) CreateNewUser(ctx context.Context, user *do
 	return user, nil
 }
 
+func (u *userRepositoryPostgresImpl) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
+	tx, err := u.pool.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback(ctx)
+		}
+	}()
+
+	qtx := u.queries.WithTx(tx)
+
+	fetchedUser, err := qtx.FindUserOneByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	if fetchedUser.ID == uuid.Nil {
+		return nil, errors.New("user not found")
+	}
+
+	return &domain.User{
+		ID:           fetchedUser.ID,
+		Email:        fetchedUser.Email,
+		FullName:     fetchedUser.FullName.String,
+		IsSso:        fetchedUser.IsSso,
+		PasswordHash: fetchedUser.PasswordHash.String,
+		Status:       domain.UsersStatus(fetchedUser.Status),
+		LastLoginAt:  fetchedUser.LastLoginAt,
+		CreatedAt:    fetchedUser.CreatedAt,
+	}, nil
+}
+
 func NewUserRepositoryPostgresImpl(
 	queries *db.Queries,
 	pool *pgxpool.Pool,

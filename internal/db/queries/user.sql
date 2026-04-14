@@ -5,3 +5,7 @@ RETURNING id;
 
 -- name: CheckIfUserExistsByEmail :one
 SELECT EXISTS(SELECT 1 FROM users WHERE email = $1);
+
+-- name: FindUserOneByEmail :one
+SELECT * FROM users where email = $1;
+

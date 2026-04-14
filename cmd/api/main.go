@@ -73,6 +73,7 @@ func main() {
 	iuhh := identityHttpHandler.NewUserHttpHandler(us)
 	iuapig := api.Group("/auth")
 	iuapig.Post("/sign-up", iuhh.Signup)
+	iuapig.Post("/sign-in", iuhh.Signin)
 
 	if err = app.Listen(":8000"); err != nil {
 		log.Fatal(err)

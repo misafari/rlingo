@@ -1,0 +1,22 @@
+info:
+  name: Sign In
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{base_url}}/auth/sign-in"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "essi.safari59@gmail.com",
+        "password": "1234567812345678"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
