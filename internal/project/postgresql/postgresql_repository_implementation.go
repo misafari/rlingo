@@ -190,3 +190,18 @@ func (r *RepositoryImplementation) FetchOneByID(ctx context.Context, projectID, 
 
 	return entity, nil
 }
+
+func NewRepository(queries *db.Queries, pool *pgxpool.Pool) *RepositoryImplementation {
+	if pool == nil {
+		panic("pool cannot be nil")
+	}
+
+	if queries == nil {
+		panic("queries cannot be nil")
+	}
+
+	return &RepositoryImplementation{
+		queries: queries,
+		pool:    pool,
+	}
+}

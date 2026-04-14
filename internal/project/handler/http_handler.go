@@ -62,6 +62,7 @@ func (h *HttpHandler) Create(c *fiber.Ctx) error {
 	entity := &domain.Project{
 		Name:        req.Name,
 		Description: req.Description,
+		Status:      domain.ProjectStatusActive,
 	}
 
 	savedProject, err := h.service.Create(c.Context(), entity)

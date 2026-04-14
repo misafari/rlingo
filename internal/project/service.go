@@ -98,7 +98,11 @@ func (u *serviceImpl) Update(ctx context.Context, project *domain.Project) error
 	return nil
 }
 
-func NewProjectService(repository Repository) Service {
+func NewService(repository Repository) Service {
+	if repository == nil {
+		panic("repository cannot be nil")
+	}
+
 	return &serviceImpl{
 		repository: repository,
 	}

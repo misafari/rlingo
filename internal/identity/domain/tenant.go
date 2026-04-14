@@ -1,10 +1,10 @@
-package model
+package domain
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
-	error2 "github.com/misafari/rlingo/internal/identity/error"
 )
 
 type TenantPlan string
@@ -35,10 +35,10 @@ type Tenant struct {
 
 func NewTenant(slug, name string) (*Tenant, error) {
 	if slug == "" {
-		return nil, error2.ErrInvalidSlug
+		return nil, errors.New("slug must not be empty")
 	}
 	if name == "" {
-		return nil, error2.ErrInvalidName
+		return nil, errors.New("name must not be empty")
 	}
 
 	now := time.Now().UTC()

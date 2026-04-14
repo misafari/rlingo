@@ -1,0 +1,23 @@
+info:
+  name: Sign Up New User
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{base_url}}/auth/sign-up"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "essi.safari59@gmail.com",
+        "password": "1234567812345678",
+        "full_name": "Essi Safari"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
