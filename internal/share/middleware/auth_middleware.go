@@ -54,7 +54,7 @@ func (m *AuthMiddleware) TenantFilter() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		auth := MustGetAuth(c)
 
-		tenantID, err := m.tenantService.GetTenantIDByUserID(auth.UserID)
+		tenantID, err := m.tenantService.GetTenantIDByUserID(c.Context(), auth.UserID)
 		if err != nil {
 			log.Debug("tenant middleware: lookup failed",
 				"error", err.Error(),
