@@ -19,7 +19,6 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		})
 	}
 
-	// 2. Handle validation errors from go-playground/validator
 	var validationErrs validator.ValidationErrors
 	if errors.As(err, &validationErrs) {
 		fields := make([]apperrors.FieldError, 0, len(validationErrs))
@@ -54,7 +53,6 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		})
 	}
 
-	// 5. Unknown errors — log and return generic 500
 	slog.Error("unhandled error", "error", err, "path", ctx.Path())
 	return ctx.Status(fiber.StatusInternalServerError).JSON(dto.ErrorResponse{
 		Success: false,

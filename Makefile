@@ -7,15 +7,15 @@ else
 SQLC := $(GO_GOPATH)/bin/sqlc
 endif
 
-DB_HOST=localhost
-DB_PORT=5455
+DB_HOST=100.94.100.79
+DB_PORT=5433
 DB_USER=admin
 DB_PASSWORD=admin
 DB_NAME=rlingo
 DB_URL=postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable
 
 # Migration configuration
-MIGRATIONS_PATH=./internal/repository/postgres/migrations
+MIGRATIONS_PATH=./internal/db/migrations
 MIGRATE=migrate
 
 migrate-create: ## Create new migration (usage: make migrate-create NAME=add_users_table)
